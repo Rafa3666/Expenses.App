@@ -1,56 +1,64 @@
-import 'package:flutter/material.dart';
-import 'package:expenses/transaction.dart';
-import 'package:intl/intl.dart';
+import 'package:flutter/material.dart'; // Importa as ferramentas do Flutter para criar a interface.
+import 'package:expenses/transaction.dart'; // Importa a classe que representa uma transação.
+import 'package:intl/intl.dart'; // Importa funções para formatação de data.
 
 class TransactionList extends StatelessWidget {
-  final List<Transaction> transactions;
+  final List<Transaction> transactions; // Lista de transações a serem exibidas.
 
-  TransactionList(this.transactions);
+  TransactionList(
+      this.transactions); // Construtor que recebe a lista de transações.
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 400,
-      // ListView.builder para exibir a lista de transações de forma rolável.
+      height: 400, // Altura fixa do container que vai mostrar as transações.
+      // Cria uma lista rolável de transações.
       child: ListView.builder(
-        itemCount: transactions.length,
+        itemCount: transactions.length, // Número total de transações na lista.
         itemBuilder: (ctx, index) {
-          final tr = transactions[index];
+          final tr = transactions[index]; // Pega a transação atual da lista.
           return Card(
+            // Cria um cartão para cada transação.
             child: Row(
+              // Organiza os elementos em uma linha.
               children: <Widget>[
                 // Container que exibe o valor da transação formatado.
                 Container(
-                  margin:
-                      const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                  margin: const EdgeInsets.symmetric(
+                      horizontal: 15,
+                      vertical: 10), // Margens para espaçamento.
                   decoration: BoxDecoration(
-                    border: Border.all(color: Colors.purple, width: 2),
+                    border: Border.all(
+                        color: Colors.purple,
+                        width: 2), // Borda roxa ao redor do valor.
                   ),
-                  padding: const EdgeInsets.all(10),
+                  padding: const EdgeInsets.all(
+                      10), // Espaçamento interno do container.
                   child: Text(
-                    "R\$ ${tr.value.toStringAsFixed(2)}", // Formatação do valor.
+                    "R\$ ${tr.value.toStringAsFixed(2)}", // Mostra o valor formatado com duas casas decimais.
                     style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20,
-                      color: Colors.purple,
+                      fontWeight: FontWeight.bold, // Define o texto em negrito.
+                      fontSize: 20, // Tamanho da fonte do valor.
+                      color: Colors.purple, // Cor do texto do valor.
                     ),
                   ),
                 ),
-                // Coluna que exibe o título e a data da transação.
+                // Coluna que mostra o título e a data da transação.
                 Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment:
+                      CrossAxisAlignment.start, // Alinha os textos à esquerda.
                   children: <Widget>[
                     Text(
-                      tr.title, // Exibe o título.
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      tr.title, // Exibe o título da transação.
+                      style: Theme.of(context)
+                          .textTheme
+                          .titleMedium, // Usa o estilo de texto definido pelo tema do app.
                     ),
                     Text(
-                      DateFormat('d MMM y')
-                          .format(tr.date), // Formatação da data.
-                      style: const TextStyle(color: Colors.grey),
+                      DateFormat('d MMM y').format(tr
+                          .date), // Formata a data para o padrão 'dia mês ano'.
+                      style: const TextStyle(
+                          color: Colors.grey), // Cor cinza para a data.
                     ),
                   ],
                 ),
