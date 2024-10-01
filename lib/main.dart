@@ -33,18 +33,18 @@ class MyHomePage extends StatefulWidget {
 
   // Lista de transações já registradas.
   final List<Transaction> _transactions = [
-    Transaction(
-      id: "t1", // ID único para a primeira transação.
-      title: "Novo Tênis de Corrida", // Nome da primeira despesa.
-      value: 310.76, // Valor da primeira despesa.
-      date: DateTime.now(), // Data da primeira despesa.
-    ),
-    Transaction(
-      id: "t2", // ID único para a segunda transação.
-      title: "Conta de Luz", // Nome da segunda despesa.
-      value: 211.20, // Valor da segunda despesa.
-      date: DateTime.now(), // Data da segunda despesa.
-    ),
+    // Transaction(
+    //   id: "t1", // ID único para a primeira transação.
+    //   title: "Novo Tênis de Corrida", // Nome da primeira despesa.
+    //   value: 310.76, // Valor da primeira despesa.
+    //   date: DateTime.now(), // Data da primeira despesa.
+    // ),
+    // Transaction(
+    //   id: "t2", // ID único para a segunda transação.
+    //   title: "Conta de Luz", // Nome da segunda despesa.
+    //   value: 211.20, // Valor da segunda despesa.
+    //   date: DateTime.now(), // Data da segunda despesa.
+    // ),
   ];
 
   // Função para acessar a lista de transações.
