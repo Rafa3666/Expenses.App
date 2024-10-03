@@ -3,6 +3,7 @@ import 'package:flutter/material.dart'; // Importa as ferramentas do Flutter par
 import 'dart:math'; // Importa funções matemáticas, como para gerar números aleatórios.
 import 'components/transaction_list.dart'; // Importa a lista que mostra todas as transações.
 import 'transaction.dart'; // Importa a classe que representa uma transação.
+import 'components/chart.dart';
 
 void main() => runApp(const ExpensesApp()); // Inicia o aplicativo de despesas.
 
@@ -32,20 +33,17 @@ class MyHomePage extends StatefulWidget {
       _MyHomePageState(); // Cria o estado da tela inicial.
 
   // Lista de transações já registradas.
-  final List<Transaction> _transactions = [
-    // Transaction(
-    //   id: "t1", // ID único para a primeira transação.
-    //   title: "Novo Tênis de Corrida", // Nome da primeira despesa.
-    //   value: 310.76, // Valor da primeira despesa.
-    //   date: DateTime.now(), // Data da primeira despesa.
-    // ),
-    // Transaction(
-    //   id: "t2", // ID único para a segunda transação.
-    //   title: "Conta de Luz", // Nome da segunda despesa.
-    //   value: 211.20, // Valor da segunda despesa.
-    //   date: DateTime.now(), // Data da segunda despesa.
-    // ),
-  ];
+  final List<Transaction> _transactions = [];
+
+  MyHomePage({super.key});
+
+  List<Transaction> get _recentTransactions {
+    return _transactions.where((tr) {
+      return tr.date.isAfter(DateTime.now().subtract(
+        const Duration(days: 7),
+      ));
+    }).toList();
+  }
 
   // Função para acessar a lista de transações.
   List<Transaction> get transactions =>
@@ -54,14 +52,14 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   // Função para adicionar uma nova despesa.
-  void _addTransaction(String title, double value) {
+  void _addTransaction(String title, double value, DateTime date) {
     final newTransaction = Transaction(
       id: Random()
           .nextDouble()
           .toString(), // Cria um ID aleatório para a nova despesa.
       title: title, // Nome da nova despesa.
       value: value, // Valor da nova despesa.
-      date: DateTime.now(), // Data da nova despesa.
+      date: date, // Data da nova despesa.
     );
     setState(() {
       widget._transactions.add(
@@ -69,6 +67,12 @@ class _MyHomePageState extends State<MyHomePage> {
     });
 
     Navigator.of(context).pop(); // Fecha o modal após adicionar a despesa.
+  }
+
+  _removeTransaction(String id) {
+    setState(() {
+      widget._transactions.removeWhere((tr) => tr.id == id);
+    });
   }
 
   // Função para abrir o formulário de nova despesa.
@@ -106,17 +110,9 @@ class _MyHomePageState extends State<MyHomePage> {
           crossAxisAlignment:
               CrossAxisAlignment.stretch, // Alinha todos os widgets à esquerda.
           children: <Widget>[
-            Container(
-              width:
-                  double.infinity, // O container ocupa toda a largura da tela.
-              child: const Card(
-                color: Colors.blue, // Cor de fundo do card.
-                elevation: 5, // Sombra do card.
-                child: Text("Gráfico"), // Texto que aparece dentro do card.
-              ),
-            ),
-            TransactionList(widget
-                .transactions), // Exibe a lista de transações registradas.
+            Chart(widget._recentTransactions),
+            TransactionList(widget._transactions,
+                _removeTransaction), // Exibe a lista de transações registradas.
           ],
         ),
       ),
