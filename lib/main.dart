@@ -1,26 +1,27 @@
-import 'package:expenses/components/transaction_form.dart'; // Importa o formulário para registrar novas despesas.
-import 'package:flutter/material.dart'; // Importa as ferramentas do Flutter para criar a interface.
-import 'dart:math'; // Importa funções matemáticas, como para gerar números aleatórios.
-import 'components/transaction_list.dart'; // Importa a lista que mostra todas as transações.
-import 'transaction.dart'; // Importa a classe que representa uma transação.
+import 'package:expenses/components/transaction_form.dart';
+import 'package:flutter/material.dart';
+import 'dart:math';
+import 'components/transaction_list.dart';
+import 'transaction.dart';
 import 'components/chart.dart';
 
-void main() => runApp(const ExpensesApp()); // Inicia o aplicativo de despesas.
+void main() => runApp(const ExpensesApp());
 
 class ExpensesApp extends StatelessWidget {
-  const ExpensesApp({super.key}); // Construtor do aplicativo.
+  const ExpensesApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: MyHomePage(), // Define a tela inicial do aplicativo.
+      home: MyHomePage(),
       theme: ThemeData(
-        fontFamily: "Quicksand", // Fonte padrão do aplicativo.
+        fontFamily: "Quicksand",
         appBarTheme: const AppBarTheme(
           titleTextStyle: TextStyle(
-              fontFamily: "OpenSans", // Fonte do título da barra de app.
-              fontSize: 20, // Tamanho da fonte do título.
-              fontWeight: FontWeight.bold), // Estilo da fonte do título.
+            fontFamily: "OpenSans",
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
     );
@@ -28,15 +29,15 @@ class ExpensesApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  @override
-  State<MyHomePage> createState() =>
-      _MyHomePageState(); // Cria o estado da tela inicial.
-
-  // Lista de transações já registradas.
-  final List<Transaction> _transactions = [];
-
   MyHomePage({super.key});
 
+  @override
+  State<MyHomePage> createState() => _MyHomePageState();
+
+  // Lista que armazena todas as transações
+  final List<Transaction> _transactions = [];
+
+  // Obtém as transações dos últimos 7 dias
   List<Transaction> get _recentTransactions {
     return _transactions.where((tr) {
       return tr.date.isAfter(DateTime.now().subtract(
@@ -45,43 +46,39 @@ class MyHomePage extends StatefulWidget {
     }).toList();
   }
 
-  // Função para acessar a lista de transações.
-  List<Transaction> get transactions =>
-      _transactions; // Retorna a lista de transações.
+  // Acesso público à lista de transações
+  List<Transaction> get transactions => _transactions;
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  // Função para adicionar uma nova despesa.
+  // Adiciona uma nova transação à lista
   void _addTransaction(String title, double value, DateTime date) {
     final newTransaction = Transaction(
-      id: Random()
-          .nextDouble()
-          .toString(), // Cria um ID aleatório para a nova despesa.
-      title: title, // Nome da nova despesa.
-      value: value, // Valor da nova despesa.
-      date: date, // Data da nova despesa.
+      id: Random().nextDouble().toString(),
+      title: title,
+      value: value,
+      date: date,
     );
     setState(() {
-      widget._transactions.add(
-          newTransaction); // Adiciona a nova despesa à lista e atualiza a tela.
+      widget._transactions.add(newTransaction);
     });
 
-    Navigator.of(context).pop(); // Fecha o modal após adicionar a despesa.
+    Navigator.of(context).pop(); // Fecha o formulário após adicionar
   }
 
-  _removeTransaction(String id) {
+  // Remove uma transação pela ID
+  void _removeTransaction(String id) {
     setState(() {
       widget._transactions.removeWhere((tr) => tr.id == id);
     });
   }
 
-  // Função para abrir o formulário de nova despesa.
+  // Abre o formulário para adicionar uma nova transação
   void _openTransactionFormModal(BuildContext context) {
     showModalBottomSheet(
-      context: context, // Passa o contexto atual.
+      context: context,
       builder: (_) {
-        return TransactionForm(
-            _addTransaction); // Passa a função que adiciona a despesa para o formulário.
+        return TransactionForm(_addTransaction);
       },
     );
   }
@@ -90,41 +87,37 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Despesas Pessoais", // Título do aplicativo.
-            style: TextStyle(
-              color: Colors.white, // Cor do texto do título.
-            )),
+        title: const Text(
+          "Despesas Pessoais",
+          style: TextStyle(
+            color: Colors.white,
+          ),
+        ),
         actions: <Widget>[
           IconButton(
-            onPressed: () => _openTransactionFormModal(
-                context), // Abre o formulário ao clicar no botão.
-            icon: const Icon(Icons.add), // Ícone de adicionar.
-            color: Colors.white, // Cor do ícone.
+            onPressed: () => _openTransactionFormModal(context),
+            icon: const Icon(Icons.add),
+            color: Colors.white,
           ),
         ],
-        backgroundColor: Colors.deepPurple, // Cor de fundo da barra de app.
+        backgroundColor: Colors.deepPurple,
       ),
       body: SingleChildScrollView(
-        // Permite rolar a tela se o conteúdo for maior que a tela.
         child: Column(
-          crossAxisAlignment:
-              CrossAxisAlignment.stretch, // Alinha todos os widgets à esquerda.
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
             Chart(widget._recentTransactions),
-            TransactionList(widget._transactions,
-                _removeTransaction), // Exibe a lista de transações registradas.
+            TransactionList(widget._transactions, _removeTransaction),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
         foregroundColor: Colors.white,
-        onPressed: () => _openTransactionFormModal(
-            context), // Abre o formulário ao clicar no botão flutuante.
-        backgroundColor: Colors.deepPurple, // Cor do botão flutuante.
-        child: const Icon(Icons.add), // Ícone de adição do botão flutuante.
+        onPressed: () => _openTransactionFormModal(context),
+        backgroundColor: Colors.deepPurple,
+        child: const Icon(Icons.add),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation
-          .centerFloat, // Posição do botão flutuante na tela.
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 }

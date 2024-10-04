@@ -1,82 +1,73 @@
 import 'package:expenses/components/chart_bar.dart';
-import 'package:expenses/transaction.dart'; // Importa o modelo de transação
-import 'package:flutter/material.dart'; // Importa os widgets do Flutter
-import 'package:intl/intl.dart'; // Importa a biblioteca para formatação de datas
+import 'package:expenses/transaction.dart';
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
+// Widget que exibe o gráfico de barras para representar as transações recentes
 class Chart extends StatelessWidget {
-  final List<Transaction>
-      recentTransactions; // Declara uma lista de transações recentes, que será passada ao construir o widget
+  final List<Transaction> recentTransactions; // Lista de transações recentes
 
-  const Chart(this.recentTransactions,
-      {super.key}); // Construtor que inicializa o widget Chart com a lista de transações
+  // Construtor que inicializa o widget Chart
+  const Chart(this.recentTransactions, {super.key});
 
-  // Getter que agrupa as transações por dia da semana nos últimos 7 dias
+  // Agrupa as transações por dia da semana, considerando os últimos 7 dias
   List<Map<String, Object>> get groupedTransactions {
-    // Gera uma lista de 7 elementos (um para cada dia da semana, retrocedendo a partir de hoje)
     return List.generate(7, (index) {
-      final weekDay = DateTime.now().subtract(
-        Duration(
-            days:
-                index), // Calcula a data do dia correspondente (a partir de hoje)
-      );
+      final weekDay = DateTime.now().subtract(Duration(days: index));
+      double totalSum = 0.0;
 
-      double totalSum =
-          0.0; // Inicializa a soma total de transações para esse dia
-
-      // Itera sobre as transações recentes para somar as transações do mesmo dia
+      // Soma o valor das transações que ocorreram no mesmo dia da semana
       for (var i = 0; i < recentTransactions.length; i++) {
-        bool sameDay = recentTransactions[i].date.day ==
-            weekDay.day; // Verifica se é o mesmo dia
-        bool sameMonth = recentTransactions[i].date.month ==
-            weekDay.month; // Verifica se é o mesmo mês
-        bool sameYear = recentTransactions[i].date.year ==
-            weekDay.year; // Verifica se é o mesmo ano
+        bool sameDay = recentTransactions[i].date.day == weekDay.day;
+        bool sameMonth = recentTransactions[i].date.month == weekDay.month;
+        bool sameYear = recentTransactions[i].date.year == weekDay.year;
 
         if (sameDay && sameMonth && sameYear) {
-          totalSum += recentTransactions[i]
-              .value; // Se for o mesmo dia, adiciona o valor da transação à soma
+          totalSum += recentTransactions[i].value;
         }
       }
 
-      // Retorna um mapa contendo o dia da semana (inicial) e o valor total das transações desse dia
+      // Retorna o dia da semana e o valor total de transações desse dia
       return {
-        "day": DateFormat.E().format(
-            weekDay)[0], // Formata o dia da semana (inicial da string do dia)
-        "value": totalSum, // Valor total de transações do dia
+        "day": DateFormat.E().format(weekDay)[0], // Inicial do dia da semana
+        "value": totalSum, // Soma total das transações do dia
       };
     })
         .reversed
-        .toList(); // Deixando o dia mais atual do lado direito dos demais.
+        .toList(); // Reverte a lista para exibir o dia mais recente por último
   }
 
+  // Soma total das transações da semana
   double get weekTotalValue {
     return groupedTransactions.fold(0.0, (sum, tr) {
       return sum + (tr["value"] as double);
     });
   }
 
-  // Método responsável por construir o widget visual do Chart
   @override
   Widget build(BuildContext context) {
     return Card(
-      elevation: 6, // Define a elevação (sombra) do Card
-      margin: const EdgeInsets.all(20), // Define a margem em torno do Card
+      elevation: 6, // Sombra do card
+      margin: const EdgeInsets.all(20), // Margem externa do card
       child: Padding(
-        padding: const EdgeInsets.all(10),
+        padding: const EdgeInsets.all(10), // Espaçamento interno do card
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          mainAxisAlignment: MainAxisAlignment
+              .spaceAround, // Distribui as barras uniformemente
           children: groupedTransactions.map((tr) {
             return Flexible(
-              fit: FlexFit.tight,
+              fit: FlexFit.tight, // Cada barra ocupa o mesmo espaço disponível
               child: ChartBar(
-                label: tr["day"] as String,
-                value: tr["value"] as double,
+                label: tr["day"] as String, // Dia da semana
+                value:
+                    tr["value"] as double, // Valor total de transações do dia
                 percentage: weekTotalValue == 0
                     ? 0
-                    : (tr["value"] as double) / weekTotalValue,
+                    : (tr["value"] as double) /
+                        weekTotalValue, // Percentual da barra
               ),
             );
-          }).toList(), // Uma linha vazia (sem widgets no momento), onde os gráficos seriam inseridos
+          }).toList(),
         ),
       ),
     );
